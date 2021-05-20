@@ -10,6 +10,7 @@ body {
     background-color: #A6A2A2;   
 }
 
+/*Name*/
 h1{
     margin: 0;
     font-size: 12vw;
@@ -18,6 +19,7 @@ h1{
     opacity: 0;
 }
 
+/*Caption under name*/
 h2{
     font-size: 3vw;
     color: #524b4b;
@@ -32,6 +34,7 @@ h3{
     transform: translateY(7vw);
 }
 
+/*Large red area at the start*/
 .front-panel{
     background-color: #847577;
     padding-top: 5vw;
@@ -39,6 +42,7 @@ h3{
     height: 27vw;
 }
 
+/*For all social links*/
 .links-ribbon{
     background-color: #CFD2CD;
     width: 100%;
@@ -53,7 +57,16 @@ h3{
     margin-right: 3%;
 }
 
-img:hover{
+/*For individual social icons*/
+#li:hover{
+    transform: scale(1.25);
+}
+
+#gh:hover{
+    transform: scale(1.25);
+}
+
+#gm:hover{
     transform: scale(1.4);
 }
 
@@ -68,6 +81,17 @@ img:hover{
 
 #prj{
     height: 70vw;
+}
+
+.pimg{
+    transition: .2s cubic-bezier(0.075, 0.82, 0.165, 1);
+}
+
+.pimg:hover{
+    
+    transform: scale(1.3);
+    filter: blur(1px);
+    -webkit-filter: blur(1px);
 }
 
 #skill{

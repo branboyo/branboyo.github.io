@@ -11,8 +11,9 @@ document.body.onload=function(){
 };
 
 
-//Reactive tab items on mouse hover
+//Reactive tab items on mouse hover (CAN BE REFACTORED WITH CLASSSELECTOR AND ARRAY ITERATOR)
 //When tab item is hovered
+
 document.getElementById('tprj').addEventListener("mouseover", function(){
     let prj = document.getElementById('tprj');
     prj.style.color="#847577";
@@ -55,6 +56,7 @@ $(function(){
 $(function(){
     $("#ctc").load("sections/contact.html"); 
 })
+
 
 
 
