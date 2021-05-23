@@ -1,5 +1,5 @@
 //CSS Transitions upon loading
-document.body.onload=function(){
+window.onload=function(){
     let name = document.querySelector('h1');
     name.style = "transition:1.5s ease-out; transform: translateY(3vw); opacity:100";
 
@@ -8,18 +8,9 @@ document.body.onload=function(){
 
     let ribbon = document.querySelector('.links-ribbon');
     ribbon.style = "transition: 1.75s; transform: translateX(0);"
-
-    //Form button transition, since we need to wait for the body to load in order to retrieve.
-    document.getElementById('send').addEventListener("mouseover", function(){
-        let button = document.getElementById('send')
-        button.style = "background-color:#847577; color:#fff"
-    });
-    
-    document.getElementById('send').addEventListener("mouseout", function(){
-        let button = document.getElementById('send')
-        button.style = "background-color:#fff; color:black"
-    });
 };
+
+
 
 
 //Reactive tab items on mouse hover (CAN BE REFACTORED WITH CLASSSELECTOR AND ARRAY ITERATOR)
@@ -58,6 +49,7 @@ document.getElementById('tctc').addEventListener("mouseout", function() {
 //Loads child HTML onto parent(page.html)
 $(function(){
     $("#prj").load("sections/projects.html"); 
+    //View detail display when hovering project images, need to wait for child template to load first.
 })
 
 $(function(){
@@ -67,8 +59,3 @@ $(function(){
 $(function(){
     $("#ctc").load("sections/contact.html"); 
 })
-
-
-
-
-
