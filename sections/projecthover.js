@@ -42,3 +42,39 @@ item5.addEventListener("mouseover", function(){
     let p5 = document.getElementById("p5");
     p5.style="opacity:100";        
 })
+
+function popup(i){
+    if (i==1){
+        var popup = document.getElementById("popup-1");
+    } else if (i==2){
+        var popup = document.getElementById("popup-2");
+    } else if (i==3){
+        var popup = document.getElementById("popup-3");
+    } else if (i==4){
+        var popup = document.getElementById("popup-4");
+    } else {
+        var popup = document.getElementById("popup-5");
+    }
+    curtain(popup)
+    popup.style.display = "block";
+    
+}
+
+function curtain(popup){
+    var curtain = document.getElementById("curtain");
+    curtain.style.display = "block";
+
+    curtain.onclick = function(event) { 
+        if (event.target == curtain) {
+            let vids = document.querySelectorAll("video");
+            [].forEach.call(vids, function(vid){
+                vid.pause();
+            })
+            curtain.style.display = "none"; 
+            popup.style.display = "none";
+        }
+    }
+}
+
+
+

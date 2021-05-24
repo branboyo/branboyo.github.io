@@ -39,7 +39,11 @@ h4{
 
 h5{ text-align: left; }
 
-ul{ line-height: 50%; }
+ul{ 
+    display: block;
+    line-height: 50%;
+}
+
 
 /*Large red area at the start*/
 .front-panel{
@@ -135,12 +139,46 @@ ul{ line-height: 50%; }
     opacity:0;
 }
 
-.details:hover{
-    opacity:100;
-}
-
 .item:hover{
     opacity: 100;
+    filter: brightness(50%);
+    transition: .15s linear;
+}
+
+#curtain{
+    display: none;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.7);
+  }
+
+.popup{
+    height: 85%;
+    max-height: 40vw;
+    width: 70vw;
+    z-index: 2;
+    display: none;
+    position: relative;
+    margin: auto;
+    top: 3.5vw;
+}
+
+.popup-left{
+    float: left;
+    height: 100%;
+    width: 50%;
+    background-color:#CFD2CD;
+}
+
+.popup-right{
+    float: left;
+    height: 100%;
+    width: 50%;
+    background-color: #A6A2A2;
 }
 
 #skill{ height: 43vw; }
