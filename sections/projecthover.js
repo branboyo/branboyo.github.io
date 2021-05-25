@@ -1,3 +1,4 @@
+//When unhovering projects, allow for "View details" to disappear by changing opacity
 let items = document.getElementsByClassName("item");
     [].forEach.call(items, function(item){
         item.addEventListener("mouseout", function(){  
@@ -13,6 +14,7 @@ let items = document.getElementsByClassName("item");
             p5.style="opactiy:0"
         })
     })
+//When hovering above projects, allow for "View details" to appear by changing opacity
 let item1 = document.getElementById("item1");
 item1.addEventListener("mouseover", function(){
     let p1 = document.getElementById("p1");
@@ -43,6 +45,7 @@ item5.addEventListener("mouseover", function(){
     p5.style="opacity:100";        
 })
 
+//Intermediate function that catches the project's corresponding popup to display.
 function popup(i){
     if (i==1){
         var popup = document.getElementById("popup-1");
@@ -61,9 +64,11 @@ function popup(i){
 }
 
 function curtain(popup){
+    //Reveals the dark background of the popup
     var curtain = document.getElementById("curtain");
     curtain.style.display = "block";
 
+    //Closes itself and the popup when it is clicked on
     curtain.onclick = function(event) { 
         if (event.target == curtain) {
             let vids = document.querySelectorAll("video");
@@ -74,6 +79,16 @@ function curtain(popup){
             popup.style.display = "none";
         }
     }
+}
+
+//Function used by "X" button in popup to close all popups and the curtain
+function hideall(){
+    var popups = document.getElementsByClassName("popup");
+    var curtain = document.getElementById("curtain");
+    curtain.style.display = "none";
+    [].forEach.call(popups, function(popup){
+        popup.style.display= "none";
+    })
 }
 
 

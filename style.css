@@ -84,8 +84,10 @@ ul{
     transition:.5s linear;
 }
 
+/*Projects section*/
 #prj{ height: 70vw; }
 
+/*Grid containers for displaying boxes*/
 .item1 { grid-area: first; }
 .item2 { grid-area: second; }
 .item3 { grid-area: third; }
@@ -120,6 +122,7 @@ ul{
     box-shadow: 5px 10px gray;
 }
 
+/*Project images*/
 .pimg{ transition: .2s cubic-bezier(0.075, 0.82, 0.165, 1); }
 
 .pimg:hover{
@@ -128,6 +131,7 @@ ul{
     -webkit-filter: blur(1px);
 }
 
+/*Text on hover*/
 .details{
     pointer-events : none;
     z-index: 2; 
@@ -145,6 +149,7 @@ ul{
     transition: .15s linear;
 }
 
+/*Popup backdrop*/
 #curtain{
     display: none;
     position: fixed;
@@ -156,6 +161,7 @@ ul{
     background-color: rgba(0,0,0,0.7);
   }
 
+/*Actual popup class*/
 .popup{
     height: 85%;
     max-height: 40vw;
@@ -167,13 +173,16 @@ ul{
     top: 3.5vw;
 }
 
+/*Div for video and buttons*/
 .popup-left{
     float: left;
     height: 100%;
     width: 50%;
     background-color:#CFD2CD;
+    text-align: center;
 }
 
+/*Div for description*/
 .popup-right{
     float: left;
     height: 100%;
@@ -181,8 +190,38 @@ ul{
     background-color: #A6A2A2;
 }
 
+/*X Button to close backdrop and popup*/
+.close {
+    color: #fff;
+    float: right;
+    margin-right:1vw;
+    font-size: 3vw;
+    font-weight: bold;
+} 
+.close:hover, 
+.close:focus {
+    color: #000;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/*Buttons on popup for deploy and source code*/
+.available{
+    margin-top: 4vw;
+    color: #fff;
+    background-color: #847577;
+    font-size:1vw;
+}
+
+.unavailable{
+    pointer-events: none;
+    font-size:1vw;
+}
+
+/*Skills section*/
 #skill{ height: 43vw; }
 
+/*Banners*/
 .skillsec{
     float: left;
     height: 29vw;
@@ -196,6 +235,7 @@ ul{
     color: #524b4b;
 }
 
+/*Contact Me section*/
 #ctc{ height: 58vw; }
 
 .form{
@@ -209,6 +249,7 @@ ul{
     text-align: center;
 }
 
+/*Div behind the form*/
 .rectangle{
     width: 20vw ;
     height: 1vw;
