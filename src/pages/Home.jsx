@@ -98,7 +98,7 @@ export default function Home() {
         >
           I'm a software engineer with an expertise in automating business operations.
           I enjoy developing workflows that save time and provide enhanced quality of life.
-          My qualities shine where I work closely with the users as cross collaboration
+          My qualities shine when I work closely with the users, as cross collaboration
           is key to low friction adaptations.
         </p>
         <p
