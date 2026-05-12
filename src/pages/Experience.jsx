@@ -6,7 +6,7 @@ const EXPERIENCE = [
     stack: ['Angular', 'GraphQL', 'Spring Boot', 'Java', 'Docker'],
     bullets: [
       'Modernized the Angular frontend for internal transaction operations for tighter payment rail integrations.',
-      'Designed a DMN-based traffic-switching layer for decisioning services, cutting release dependencies by 15%.',
+      'Designed a Decision Model and Notation-based traffic-switching layer for decisioning services, cutting release dependencies by 15%.',
     ],
   },
   {
@@ -25,7 +25,7 @@ const EXPERIENCE = [
     period: 'Dec 2021 — Aug 2022',
     stack: ['ASP.NET', 'C#', 'Python', 'PowerApps', 'SharePoint'],
     bullets: [
-      'Maintained the ASP.NET construction-tracking platform powering the DC Metro Silver Line extension project.',
+      'Maintained the ASP.NET construction-tracking web app powering the DC Metro Silver Line extension project.',
       'Built inventory tooling with PowerApps and Python that meaningfully reduced manual overhead for the IT team.',
     ],
   },
