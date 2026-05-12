@@ -1,12 +1,24 @@
 import { useRef, useState, useCallback, useEffect } from 'react'
 
-import Orb    from './Orb'
-import Ripple from './Ripple'
+import Orb      from './Orb'
+import Ripple   from './Ripple'
+import MobileApp from './MobileApp'
 import { GitHubIcon, LinkedInIcon } from './icons'
 import Home       from './pages/Home'
 import Projects   from './pages/Projects'
 import Experience from './pages/Experience'
 import Contact    from './pages/Contact'
+
+// ── Mobile detection ───────────────────────────────────────────────────────
+function useIsMobile() {
+  const [mobile, setMobile] = useState(() => window.innerWidth < 1024)
+  useEffect(() => {
+    const handler = () => setMobile(window.innerWidth < 1024)
+    window.addEventListener('resize', handler)
+    return () => window.removeEventListener('resize', handler)
+  }, [])
+  return mobile
+}
 
 const PAGES = { home: Home, projects: Projects, experience: Experience, contact: Contact }
 
@@ -80,8 +92,8 @@ function Quip({ navActive }) {
   )
 }
 
-// ── App ────────────────────────────────────────────────────────────────────
-export default function App() {
+// ── Desktop App ────────────────────────────────────────────────────────────
+function DesktopApp() {
   const bgRef      = useRef(null)
   const contentRef = useRef(null)
 
@@ -158,7 +170,7 @@ export default function App() {
           zIndex: 4,
           top: '10vh',
           left: '48px',
-          width: '520px',
+          width: 'min(520px, 45vw)',
           height: panelHeight > 0 ? `${panelHeight}px` : 0,
           maxHeight: '80vh',
           background: 'rgba(255, 255, 255, 0.07)',
@@ -202,7 +214,7 @@ export default function App() {
             position: 'fixed',
             top: '10vh',
             left: '48px',
-            width: '520px',
+            width: 'min(520px, 45vw)',
             maxHeight: '80vh',
             overflowY: 'auto',
             overflowX: 'hidden',
@@ -235,13 +247,13 @@ export default function App() {
         >
           <h2
             className="font-ui font-semibold tracking-tight text-black page-item"
-            style={{ fontSize: '3.84rem', lineHeight: 1.1, whiteSpace: 'nowrap', animationDelay: '0ms', textShadow: '0 0 18px #F0EBD6, 0 0 8px #F0EBD6' }}
+            style={{ fontSize: 'clamp(2.4rem, 3.2vw, 3.84rem)', lineHeight: 1.1, animationDelay: '0ms', textShadow: '0 0 18px #F0EBD6, 0 0 8px #F0EBD6' }}
           >
             Brandon Hsu
           </h2>
           <p
             className="font-details tracking-widest text-black/65 uppercase mt-2 page-item"
-            style={{ fontSize: '1.44rem', animationDelay: '50ms', textShadow: '0 0 18px #F0EBD6, 0 0 8px #F0EBD6' }}
+            style={{ fontSize: 'clamp(0.9rem, 1.2vw, 1.44rem)', animationDelay: '50ms', textShadow: '0 0 18px #F0EBD6, 0 0 8px #F0EBD6' }}
           >
             Software Engineer
           </p>
@@ -312,4 +324,10 @@ export default function App() {
       />
     </div>
   )
+}
+
+// ── Root — routes mobile vs desktop ───────────────────────────────────────
+export default function App() {
+  const isMobile = useIsMobile()
+  return isMobile ? <MobileApp /> : <DesktopApp />
 }

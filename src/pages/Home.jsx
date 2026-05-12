@@ -16,13 +16,13 @@ export default function Home() {
         >
           <h1
             className="font-ui font-semibold tracking-tight text-black"
-            style={{ fontSize: '4.65rem', lineHeight: 1.1 }}
+            style={{ fontSize: 'clamp(3rem, 3.8vw, 4.65rem)', lineHeight: 1.1 }}
           >
             Brandon Hsu
           </h1>
           <p
             className="font-details tracking-widest text-black/65 uppercase mt-2"
-            style={{ fontSize: '1.62rem' }}
+            style={{ fontSize: 'clamp(1rem, 1.4vw, 1.62rem)' }}
           >
             Software Engineer
           </p>
@@ -59,8 +59,8 @@ export default function Home() {
         style={{
           top: '50%',
           transform: 'translateY(-50%)',
-          left: '100px',
-          width: '506px',
+          left: 'max(48px, 8vw)',
+          width: 'min(506px, 43vw)',
           zIndex: 5,
           pointerEvents: 'none',
           padding: '32px 36px',
@@ -76,7 +76,7 @@ export default function Home() {
         <h2
           className="font-bio text-black page-item"
           style={{
-            fontSize: '2.8rem',
+            fontSize: 'clamp(2rem, 2.4vw, 2.8rem)',
             fontWeight: 600,
             lineHeight: 1.1,
             marginBottom: '1rem',
@@ -89,7 +89,7 @@ export default function Home() {
         <p
           className="font-bio text-black page-item"
           style={{
-            fontSize: '1.25rem',
+            fontSize: 'clamp(1rem, 1.1vw, 1.25rem)',
             lineHeight: '1.75',
             marginBottom: '1.1rem',
             animationDelay: '120ms',
@@ -104,7 +104,7 @@ export default function Home() {
         <p
           className="font-bio text-black/75 page-item"
           style={{
-            fontSize: '1.25rem',
+            fontSize: 'clamp(1rem, 1.1vw, 1.25rem)',
             lineHeight: '1.75',
             marginBottom: '1.1rem',
             animationDelay: '190ms',
@@ -118,14 +118,14 @@ export default function Home() {
         <p
           className="font-bio text-black/55 page-item"
           style={{
-            fontSize: '1.25rem',
+            fontSize: 'clamp(1rem, 1.1vw, 1.25rem)',
             lineHeight: '1.75',
             animationDelay: '260ms',
             textShadow: SHADOW,
           }}
         >
           In my spare time, you can find me weightlifting, developing SaaS products,
-          and in the studio producing music.
+          or in the studio producing music.
         </p>
       </div>
     </>
