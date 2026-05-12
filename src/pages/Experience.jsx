@@ -16,7 +16,7 @@ const EXPERIENCE = [
     stack: ['Node.js', 'React', 'Express', 'TypeScript', 'AWS', 'PostgreSQL'],
     bullets: [
       'Built automated test scaffolding for parallelized browser tests running on AWS with request payload validation.',
-      'Redesigned and shipped an internal React + Express dashboard servicing thousands of daily requests for test results.',
+      'Redesigned and shipped an internal full stack dashboard servicing thousands of daily requests for test results.',
     ],
   },
   {
