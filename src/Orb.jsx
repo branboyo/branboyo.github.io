@@ -1,9 +1,9 @@
 import { useRef, useEffect } from 'react'
-import { RING_RADIUS, LABEL_THRESHOLD, LABELS, getDirection } from './constants'
+import { RING_RADIUS, LABEL_THRESHOLD, PAGES, NAV, getDirection } from './constants'
 import { makeShard, drawShard } from './shard'
 import { spawnWhite, spawnTrail, updateP } from './particles'
 
-export default function Orb({ bgRef }) {
+export default function Orb({ bgRef, onNavigate, onPageChange, currentPage }) {
   const orbRef    = useRef(null)
   const canvasRef = useRef(null)
   const ringRef   = useRef(null)
@@ -13,6 +13,16 @@ export default function Orb({ bgRef }) {
     bottom: useRef(null),
     left:   useRef(null),
   }
+
+  // Keep callback refs current so the rAF loop always has the latest version
+  const onNavigateRef   = useRef(onNavigate)
+  const onPageChangeRef = useRef(onPageChange)
+  // currentPageRef lets the closure always read the latest page, even when
+  // it was changed externally (e.g. quicknav) without an orb navigation.
+  const currentPageRef  = useRef(currentPage)
+  useEffect(() => { onNavigateRef.current   = onNavigate   })
+  useEffect(() => { onPageChangeRef.current = onPageChange })
+  useEffect(() => { currentPageRef.current  = currentPage  })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -33,21 +43,30 @@ export default function Orb({ bgRef }) {
 
     let orbX = 0, orbY = 0
     let active = false, isDragging = false, isAnimating = false
+    let pendingPage = null
     let whiteParticles = [], trailParticles = [], shards = []
     let rafId      = null
     let holdTimer  = null
+    let prevTime   = null
     let shineAngle = -Math.PI * 0.25
     let gridX  = 0, gridY  = 0
-    let gridEase = null // { startX, startY, endX, endY, orbStartX, orbStartY, frame, frames }
+    let gridEase = null // { startX, startY, endX, endY, orbStartX, orbStartY, elapsed, duration }
 
     function updateLabels(x, y) {
       const dir = active ? getDirection(x, y) : null
+      const nav = NAV[currentPageRef.current]
       for (const [key, el] of Object.entries(labels)) {
-        el.style.opacity = key === dir ? '1' : '0'
+        const dest = nav[key]
+        el.textContent    = dest ? PAGES[dest].label : ''
+        el.style.opacity  = (key === dir && dest) ? '1' : '0'
       }
     }
 
-    function tick() {
+    function tick(now) {
+      const dt     = prevTime !== null ? Math.min(now - prevTime, 50) : 16.667
+      const factor = dt / 16.667
+      prevTime     = now
+
       const cx   = canvas.width  / 2
       const cy   = canvas.height / 2
       const dist = Math.sqrt(orbX * orbX + orbY * orbY)
@@ -59,24 +78,24 @@ export default function Orb({ bgRef }) {
           for (let i = 0; i < 5; i++) { const p = spawnTrail(orbX, orbY); if (p) trailParticles.push(p) }
       }
 
-      for (const p of whiteParticles) updateP(p, active ? 0.005 : 0.03)
-      for (const p of trailParticles) updateP(p, (active && dist > 5) ? 0.01 : 0.045)
+      for (const p of whiteParticles) updateP(p, active ? 0.005 : 0.03, factor)
+      for (const p of trailParticles) updateP(p, (active && dist > 5) ? 0.01 : 0.045, factor)
       whiteParticles = whiteParticles.filter(p => p.alpha > 0)
       trailParticles = trailParticles.filter(p => p.alpha > 0)
 
       for (const s of shards) {
-        s.x  += s.vx;  s.y  += s.vy
-        s.vy += 0.22;  s.vx *= 0.993
-        s.rot    += s.rotSpeed
-        s.stutterTimer--
+        s.x  += s.vx * factor;  s.y  += s.vy * factor
+        s.vy += 0.22 * factor;  s.vx *= Math.pow(0.993, factor)
+        s.rot += s.rotSpeed * factor
+        s.stutterTimer -= dt
         if (s.stutterTimer <= 0) {
           const big = Math.random() < 0.12
           const m   = big ? 3 + Math.random() * 4 : 1
           s.stutterX = (Math.random() - 0.5) * 2 * s.gx * m
           s.stutterY = (Math.random() - 0.5) * 2 * s.gy * m
-          s.stutterTimer = Math.floor(2 + Math.random() * 6)
+          s.stutterTimer = (2 + Math.random() * 6) * 16.667  // 33–133 ms
         }
-        s.alpha -= 0.006
+        s.alpha -= 0.014 * factor
       }
       shards = shards.filter(s => s.alpha > 0)
 
@@ -95,7 +114,7 @@ export default function Orb({ bgRef }) {
           ctx.fillStyle = eg
           ctx.fillRect(0, 0, canvas.width, canvas.height)
 
-          shineAngle += 0.006
+          shineAngle += 0.006 * factor
           const sx = cx + Math.cos(shineAngle) * RING_RADIUS * 0.82
           const sy = cy + Math.sin(shineAngle) * RING_RADIUS * 0.82
           const sh = ctx.createRadialGradient(sx, sy, 0, sx, sy, 90)
@@ -125,9 +144,9 @@ export default function Orb({ bgRef }) {
       for (const s of shards) drawShard(ctx, s)
 
       if (gridEase) {
-        gridEase.frame++
-        const t = Math.min(gridEase.frame / gridEase.frames, 1)
-        const e = t * t * t * t // quartic ease-in — long still pause, then surges into center
+        gridEase.elapsed = Math.min(gridEase.elapsed + dt, gridEase.duration)
+        const t = gridEase.elapsed / gridEase.duration
+        const e = t * t * t     // cubic ease-in — quicker build, still cinematic surge
 
         gridX = gridEase.startX + (gridEase.endX - gridEase.startX) * e
         gridY = gridEase.startY + (gridEase.endY - gridEase.startY) * e
@@ -141,12 +160,22 @@ export default function Orb({ bgRef }) {
           gridEase = null
           orbX = 0; orbY = 0
           positionOrb(0, 0)
+          if (pendingPage) {
+            const arrived = pendingPage
+            pendingPage = null
+            onPageChangeRef.current?.(arrived)
+          }
           isAnimating = false
         }
       }
 
       const busy = active || whiteParticles.length > 0 || trailParticles.length > 0 || shards.length > 0 || gridEase !== null
-      rafId = busy ? requestAnimationFrame(tick) : null
+      if (busy) {
+        rafId = requestAnimationFrame(tick)
+      } else {
+        rafId     = null
+        prevTime  = null  // reset so next activation starts with a clean dt
+      }
     }
 
     function startLoop() { if (!rafId) rafId = requestAnimationFrame(tick) }
@@ -174,15 +203,15 @@ export default function Orb({ bgRef }) {
 
     function snapToCenter() {
       orbX = 0; orbY = 0
-      orbEl.style.transition = 'transform 0.55s cubic-bezier(0.4,0,0.2,1)'
+      orbEl.style.transition = 'transform 0.26s cubic-bezier(0.23,1,0.32,1)'
       positionOrb(0, 0)
-      setTimeout(() => { orbEl.style.transition = ''; isAnimating = false }, 560)
+      setTimeout(() => { orbEl.style.transition = ''; isAnimating = false }, 270)
     }
 
     function triggerEdgeAnimation(dir) {
       isAnimating = true
       const W = window.innerWidth, H = window.innerHeight
-      const FRAMES = 75 // ~1.25s — quartic ease-in needs room for the slow buildup
+      const DURATION = 750 // ms — cubic ease-in: faster response, still cinematic
 
       // Shards still spawn at the screen edge; orb travels a full viewport to next page center
       const config = {
@@ -194,7 +223,7 @@ export default function Orb({ bgRef }) {
       const { flyTx, flyTy, ix, iy, scatter } = config[dir]
 
       // Phase 1: orb flies past the edge to the center of the next page (off-screen)
-      orbEl.style.transition = 'transform 0.42s cubic-bezier(0.4,0,1,1)'
+      orbEl.style.transition = 'transform 0.25s cubic-bezier(0.4,0,1,1)'
       orbEl.style.transform  = `translate(calc(-50% + ${flyTx}px), calc(-50% + ${flyTy}px))`
 
       setTimeout(() => {
@@ -210,9 +239,9 @@ export default function Orb({ bgRef }) {
           startX: gridX, startY: gridY,
           endX: gridX - flyTx, endY: gridY - flyTy,
           orbStartX: flyTx, orbStartY: flyTy,
-          frame: 0, frames: FRAMES,
+          elapsed: 0, duration: DURATION,
         }
-      }, 420)
+      }, 250)
     }
 
     function deactivate() {
@@ -224,7 +253,8 @@ export default function Orb({ bgRef }) {
       ringEl.style.transform = 'translate(-50%, -50%) scale(0.85)'
       orbEl.style.cursor = 'grab'
       updateLabels(0, 0)
-      if (dir) triggerEdgeAnimation(dir)
+      const dest = dir ? NAV[currentPageRef.current][dir] : null
+      if (dest) { pendingPage = dest; onNavigateRef.current?.(); triggerEdgeAnimation(dir) }
       else snapToCenter()
     }
 
@@ -283,6 +313,8 @@ export default function Orb({ bgRef }) {
     zIndex: 25,
     pointerEvents: 'none',
     transition: 'opacity 0.12s ease',
+    color: 'white',
+    mixBlendMode: 'difference',
   }
 
   return (
@@ -294,7 +326,7 @@ export default function Orb({ bgRef }) {
         className="fixed rounded-full pointer-events-none"
         style={{
           top: '50%', left: '50%',
-          width: 500, height: 500,
+          width: RING_RADIUS * 2, height: RING_RADIUS * 2,
           border: '3px solid rgba(255,255,255,0.9)',
           transform: 'translate(-50%, -50%) scale(0.85)',
           opacity: 0, zIndex: 15,
@@ -321,22 +353,14 @@ export default function Orb({ bgRef }) {
         }}
       />
 
-      <span ref={labelRefs.top} className="font-ui font-semibold tracking-widest uppercase text-xs text-black/70"
-        style={{ ...labelBase, top: `calc(50% - ${RING_RADIUS + 22}px)`, left: '50%', transform: 'translateX(-50%)' }}>
-        {LABELS.top.text}
-      </span>
-      <span ref={labelRefs.bottom} className="font-ui font-semibold tracking-widest uppercase text-xs text-black/70"
-        style={{ ...labelBase, top: `calc(50% + ${RING_RADIUS + 10}px)`, left: '50%', transform: 'translateX(-50%)' }}>
-        {LABELS.bottom.text}
-      </span>
-      <span ref={labelRefs.left} className="font-ui font-semibold tracking-widest uppercase text-xs text-black/70"
-        style={{ ...labelBase, left: `calc(50% - ${RING_RADIUS + 16}px)`, top: '50%', transform: 'translate(-100%, -50%)' }}>
-        {LABELS.left.text}
-      </span>
-      <span ref={labelRefs.right} className="font-ui font-semibold tracking-widest uppercase text-xs text-black/70"
-        style={{ ...labelBase, left: `calc(50% + ${RING_RADIUS + 16}px)`, top: '50%', transform: 'translateY(-50%)' }}>
-        {LABELS.right.text}
-      </span>
+      <span ref={labelRefs.top}    className="font-ui font-semibold tracking-widest uppercase text-xs"
+        style={{ ...labelBase, top: `calc(50% - ${RING_RADIUS + 22}px)`, left: '50%', transform: 'translateX(-50%)' }} />
+      <span ref={labelRefs.bottom} className="font-ui font-semibold tracking-widest uppercase text-xs"
+        style={{ ...labelBase, top: `calc(50% + ${RING_RADIUS + 10}px)`, left: '50%', transform: 'translateX(-50%)' }} />
+      <span ref={labelRefs.left}   className="font-ui font-semibold tracking-widest uppercase text-xs"
+        style={{ ...labelBase, left: `calc(50% - ${RING_RADIUS + 16}px)`, top: '50%', transform: 'translate(-100%, -50%)' }} />
+      <span ref={labelRefs.right}  className="font-ui font-semibold tracking-widest uppercase text-xs"
+        style={{ ...labelBase, left: `calc(50% + ${RING_RADIUS + 16}px)`, top: '50%', transform: 'translateY(-50%)' }} />
     </>
   )
 }

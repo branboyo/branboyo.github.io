@@ -28,12 +28,12 @@ export function spawnTrail(orbX, orbY) {
   }
 }
 
-export function updateP(p, fadeRate) {
-  p.x += p.vx; p.y += p.vy
+export function updateP(p, fadeRate, factor = 1) {
+  p.x += p.vx * factor; p.y += p.vy * factor
   if (p.in) {
-    p.alpha = Math.min(p.alpha + 0.03, p.max)
+    p.alpha = Math.min(p.alpha + 0.03 * factor, p.max)
     if (p.alpha >= p.max) p.in = false
   } else {
-    p.alpha -= fadeRate
+    p.alpha -= fadeRate * factor
   }
 }

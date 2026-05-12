@@ -7,6 +7,7 @@ export default {
         ui:      ['Syne', 'sans-serif'],
         dialogue:['Cormorant Garamond', 'serif'],
         details: ['Space Mono', 'monospace'],
+        bio:     ['Playfair Display', 'serif'],
       },
     },
   },

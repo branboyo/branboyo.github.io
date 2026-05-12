@@ -9,7 +9,7 @@ export function makeShard(cx, cy, scatterAngle) {
   })
 
   const angle = scatterAngle + (Math.random() - 0.5) * Math.PI * 1.4
-  const speed = 4 + Math.random() * 11
+  const speed = 2 + Math.random() * 5
   const perpX = Math.sin(scatterAngle) * (Math.random() - 0.5) * 80
   const perpY = Math.cos(scatterAngle) * (Math.random() - 0.5) * 80
   return {
